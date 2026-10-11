@@ -1,0 +1,52 @@
+
+name: Build GoalFlow APK
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'GoalFlow-Android-WebView-MVP.zip'
+      - '.github/workflows/build-apk.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Unzip project
+        run: |
+          mkdir project
+          unzip -o GoalFlow-Android-WebView-MVP.zip -d project
+          ROOT=$(find project -type f \( -name settings.gradle -o -name settings.gradle.kts \) -print -quit | xargs -r dirname)
+          if [ -z "$ROOT" ]; then
+            echo "Không tìm thấy settings.gradle"
+            exit 1
+          fi
+          echo "PROJECT_ROOT=$ROOT" >> "$GITHUB_ENV"
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Build APK
+        run: gradle -p "$PROJECT_ROOT" assembleDebug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: GoalFlow-APK
+          path: project/**/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
+          
