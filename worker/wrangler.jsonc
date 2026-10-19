@@ -1,0 +1,24 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "goalflow-notion-sync",
+  "main": "src/index.mjs",
+  "compatibility_date": "2026-03-11",
+  "workers_dev": true,
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS",
+    "run_worker_first": ["/api/*"]
+  },
+  "vars": {
+    "WEB_ORIGIN": "https://REPLACE-WITH-EXACT-WEB-ORIGIN",
+    "GOALS_DATA_SOURCE_ID": "REPLACE-WITH-GOALS-DATA-SOURCE-ID",
+    "TASKS_DATA_SOURCE_ID": "REPLACE-WITH-TASKS-DATA-SOURCE-ID"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "goalflow-auth",
+      "database_id": "REPLACE-WITH-D1-DATABASE-ID"
+    }
+  ]
+}

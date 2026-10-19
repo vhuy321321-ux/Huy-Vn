@@ -8,9 +8,12 @@ on:
       - 'GoalFlow-Android-WebView-MVP.zip'
       - '.github/workflows/build-apk.yml'
       - 'tests/**'
+      - 'worker/**'
+      - 'AGENTS.md'
   pull_request:
     branches:
       - main
+      - ai/goalflow-android-backup
 
 permissions:
   contents: read
@@ -38,6 +41,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+
+      - name: Check Worker JavaScript syntax
+        run: node --check worker/src/index.mjs
+
+      - name: Test Notion Worker with mocks
+        run: node --test worker/test/index.test.mjs
 
       - name: Test web backup flows
         run: node tests/web-backup.test.mjs "$PROJECT_ROOT/app/src/main/assets/index.html"
