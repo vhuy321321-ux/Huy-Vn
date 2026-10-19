@@ -7,6 +7,12 @@ on:
     paths:
       - 'GoalFlow-Android-WebView-MVP.zip'
       - '.github/workflows/build-apk.yml'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'GoalFlow-Android-WebView-MVP.zip'
+      - '.github/workflows/build-apk.yml'
 
 permissions:
   contents: read
