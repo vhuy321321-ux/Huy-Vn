@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#172033">
+<title>GoalFlow — Mục tiêu cá nhân</title>
+<style>
+:root{--ink:#172033;--muted:#667085;--blue:#4169e1;--bg:#f3f5f9;--card:#fff;--line:#e5e9f0;--green:#16835d}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px system-ui,-apple-system,Segoe UI,sans-serif}
+header{background:var(--ink);color:white;padding:24px 18px 28px;border-radius:0 0 24px 24px}
+.eyebrow{font-size:11px;letter-spacing:1.5px;opacity:.7;font-weight:800}.headrow{display:flex;align-items:center;justify-content:space-between;gap:12px}
+h1{font-size:27px;margin:6px 0 4px}header p{margin:0;color:#cbd3e2;font-size:13px}
+main{max-width:650px;margin:auto;padding:16px 14px 40px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:13px;box-shadow:0 3px 14px #14213d08}
+.sectionhead{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:3px 0 12px}
+h2{font-size:18px;margin:0}h3{font-size:16px;margin:0 0 5px}
+button{border:0;border-radius:12px;padding:11px 13px;font-weight:700;background:var(--blue);color:white;font-size:14px;cursor:pointer}
+button.secondary{background:#eef2ff;color:#2e4fc2}button.ghost{background:#f0f2f6;color:#4c5668}button.danger{background:#fff0f0;color:#b42318}
+input,select{width:100%;padding:12px;border:1px solid #d9deea;border-radius:11px;font:inherit;background:white;color:var(--ink);margin:5px 0 10px}
+label{display:block;color:var(--muted);font-size:12px;font-weight:700;margin-top:7px}
+.subtask{margin-left:28px;border-left:3px solid #dbe4ff}
+.progress{height:9px;background:#e7ebf3;border-radius:20px;overflow:hidden;margin:12px 0 8px}.progress>div{height:100%;width:0;background:var(--blue);border-radius:20px;transition:width .2s}
+.muted{color:var(--muted);font-size:13px}.statrow{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.task{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:13px;padding:12px;margin-top:9px}
+.task input[type=checkbox]{width:20px;height:20px;flex-shrink:0;margin:2px 0;accent-color:var(--blue)}
+.tasktitle{font-weight:650;overflow-wrap:anywhere}.task.done .tasktitle{text-decoration:line-through;color:var(--muted)}
+.taskmeta{font-size:12px;color:var(--muted);margin-top:4px}.taskactions{display:flex;gap:6px;margin-left:auto}.taskactions button{padding:6px 8px;font-size:12px}
+.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:0 10px}.full{grid-column:1/-1}
+.empty{padding:20px 8px;text-align:center;color:var(--muted);font-size:14px}
+footer{text-align:center;color:#8992a3;font-size:11px;padding:8px 0 20px}
+@media(min-width:520px){main{padding-top:22px}.card{padding:19px}}
+</style>
+</head>
+<body>
+<header>
+ <div class="headrow"><div><div class="eyebrow">GOALFLOW · PERSONAL</div><h1>Mục tiêu của bạn</h1><p>Mỗi ngày một bước nhỏ.</p></div><div style="font-size:28px">◉</div></div>
+</header>
+<main>
+ <section class="card">
+  <div class="sectionhead"><h2>🎯 Mục tiêu chính</h2><button class="secondary" id="editGoalBtn">Chỉnh sửa</button></div>
+  <h3 id="goalTitle">Học tập lớp 12</h3><div class="muted" id="goalDeadline">Chưa đặt hạn hoàn thành</div>
+  <div class="progress"><div id="progressBar"></div></div>
+  <div class="statrow"><strong id="progressLabel">0% hoàn thành</strong><span class="muted" id="taskCount">0/0 việc</span></div>
+ </section>
+ <section class="card" id="goalFormCard" hidden>
+  <h2>Thiết lập mục tiêu</h2>
+  <label for="goalInput">Tên mục tiêu</label><input id="goalInput" maxlength="100" placeholder="Ví dụ: Học tốt lớp 12">
+  <label for="goalDate">Ngày hoàn thành</label><input id="goalDate" type="date">
+  <div class="statrow"><button class="ghost" id="cancelGoal">Huỷ</button><button id="saveGoal">Lưu mục tiêu</button></div>
+ </section>
+ <section class="card">
+  <div class="sectionhead"><h2>☑️ Việc cần làm</h2><button id="addTaskBtn">+ Thêm việc</button></div>
+  <div id="taskForm" hidden>
+   <label for="taskTitle">Tên công việc</label><input id="taskTitle" maxlength="140" placeholder="Ví dụ: Ôn tích phân 20 phút">
+   <label for="taskDate">Hạn hoàn thành (không bắt buộc)</label><input id="taskDate" type="date">
+   <label for="parentTask">Công việc cha (để trống nếu là việc chính)</label><select id="parentTask"><option value="">Không có</option></select>
+   <div class="statrow"><button class="ghost" id="cancelTask">Huỷ</button><button id="saveTask">Lưu công việc</button></div>
+  </div>
+  <div id="taskList"></div>
+ </section>
+ <section class="card" id="notionCard">
+  <div class="sectionhead"><h2>🔄 Đồng bộ Notion</h2><button class="secondary" id="syncNotionBtn">Đăng nhập và đồng bộ</button></div>
+  <label for="workerUrl">Địa chỉ GoalFlow Worker (HTTPS)</label><input id="workerUrl" type="url" inputmode="url" placeholder="https://goalflow-notion-sync.example.workers.dev">
+  <label for="notionPassword">Mật khẩu truy cập do bạn đặt trong Worker</label><input id="notionPassword" type="password" autocomplete="off" placeholder="Chỉ gửi qua HTTPS, không lưu trên thiết bị">
+  <div class="muted" id="notionStatus" role="status">Token Notion chỉ được giữ trên Worker. Lần đồng bộ đầu tiên sẽ đưa dữ liệu cục bộ lên Notion.</div>
+ </section>
+ <section class="card">
+  <h2>📌 Nhắc nhỏ</h2><p class="muted" style="line-height:1.6;margin-bottom:0">Chia mục tiêu lớn thành việc nhỏ. Đánh dấu hoàn thành để theo dõi tiến độ. Dữ liệu được lưu trên trình duyệt của thiết bị này; hãy xuất bản sao lưu nếu cần chuyển máy.</p>
+ </section>
+ <section class="statrow" style="padding:0 2px"><button class="ghost" id="exportBtn">Xuất bản sao lưu</button><button class="ghost" id="importBtn">Nhập bản sao lưu</button><input type="file" id="importFile" accept="application/json" hidden></section>
+<footer>GoalFlow · Dữ liệu cục bộ và đồng bộ Notion tùy chọn</footer>
+</main>
+<script>
+const KEY='goalflow_web_v1', BASE_KEY='goalflow_notion_base_v1', WORKER_KEY='goalflow_worker_url_v1';
+const $=id=>document.getElementById(id);
+const newId=()=>crypto.randomUUID?.()||`${Date.now()}-${Math.random().toString(16).slice(2)}`;
+let state={goalId:newId(),goal:'Học tập lớp 12',deadline:'',tasks:[
+ {id:newId(),title:'Ôn bài hôm nay',date:'',done:false,parentTaskId:''},
+ {id:newId(),title:'Làm bài tập còn thiếu',date:'',done:false,parentTaskId:''},
+ {id:newId(),title:'Đọc sách 10 phút',date:'',done:false,parentTaskId:''}
+]};
+let editingId=null, notionToken='', notionRequestId=0;
+const pendingNotion=new Map();
+window.onGoalFlowNotionResponse=(id,status,body)=>{const pending=pendingNotion.get(id);if(!pending)return;pendingNotion.delete(id);try{pending.resolve({status,body:JSON.parse(body)})}catch(e){pending.reject(e)}};
+function normalizeState(s){s.goalId ||= newId();s.goal=typeof s.goal==='string'?s.goal:(s.title||'Mục tiêu của bạn');s.deadline ||= '';s.tasks=s.tasks.map(t=>({...t,id:t.id||newId(),date:t.date||t.dueDate||'',done:t.done===true,parentTaskId:t.parentTaskId||t.parentId||'',goalId:t.goalId||s.goalId}));const ids=new Set(s.tasks.map(t=>t.id));s.tasks.forEach(t=>{if(t.parentTaskId&&!ids.has(t.parentTaskId))t.parentTaskId=''});return s}
+function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&Array.isArray(s.tasks))state=normalizeState(s)}catch(e){}state=normalizeState(state);try{localStorage.setItem(KEY,JSON.stringify(state));$('workerUrl').value=localStorage.getItem(WORKER_KEY)||''}catch(e){}}
+function save(){
+ localStorage.setItem(KEY,JSON.stringify(state));
+ render();
+ try { if(window.GoalFlowBridge) window.GoalFlowBridge.sync(JSON.stringify(state)); } catch(e) {}
+ }
+function dateLabel(d){if(!d)return '';const today=new Date();today.setHours(0,0,0,0);const target=new Date(d+'T00:00:00');const days=Math.round((target-today)/86400000);return days<0?`Quá hạn ${-days} ngày`:days===0?'Hạn hôm nay':`Còn ${days} ngày`}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function render(){
+ $('goalTitle').textContent=state.goal;$('goalDeadline').textContent=state.deadline?`${state.deadline} · ${dateLabel(state.deadline)}`:'Chưa đặt hạn hoàn thành';
+ const counted=state.tasks.filter(t=>!state.tasks.some(c=>c.parentTaskId===t.id));const done=counted.filter(t=>t.done).length,p=counted.length?Math.round(done/pSafe(counted.length)):0;
+ $('progressBar').style.width=p+'%';$('progressLabel').textContent=p+'% hoàn thành';$('taskCount').textContent=`${done}/${counted.length} việc nhỏ`;
+ const list=$('taskList');list.innerHTML='';
+ if(!state.tasks.length){list.innerHTML='<div class="empty">Chưa có việc nào. Thêm một việc nhỏ để bắt đầu.</div>';return}
+ const taskLevel=t=>{let depth=0, parent=t.parentTaskId, seen=new Set([t.id]);while(parent){if(seen.has(parent))return 0;seen.add(parent);depth++;parent=state.tasks.find(x=>x.id===parent)?.parentTaskId||''}return Math.min(depth,1)};
+ const ordered=[...state.tasks].sort((a,b)=>taskLevel(a)-taskLevel(b));
+ ordered.forEach(t=>{
+ const div=document.createElement('div');div.className='task'+(t.done?' done':'')+(t.parentTaskId?' subtask':'');
+ const check=document.createElement('input');check.type='checkbox';check.checked=t.done;check.setAttribute('aria-label','Đánh dấu hoàn thành');check.onchange=()=>{t.done=check.checked;save()};
+ const details=document.createElement('div');details.style.flex='1';details.innerHTML=`<div class="tasktitle">${escapeHtml(t.title)}</div><div class="taskmeta">${t.date?escapeHtml(t.date+' · '+dateLabel(t.date)):'Chưa đặt hạn'}</div>`;
+ const actions=document.createElement('div');actions.className='taskactions';
+ const edit=document.createElement('button');edit.className='secondary';edit.textContent='Sửa';edit.onclick=()=>openTask(t.id);
+ const sub=document.createElement('button');sub.className='ghost';sub.textContent='+ Con';sub.setAttribute('aria-label',`Thêm công việc con cho ${t.title}`);sub.onclick=()=>openTask(null,t.id);
+ sub.hidden=!!t.parentTaskId||state.tasks.some(x=>x.parentTaskId===t.id);
+ const del=document.createElement('button');del.className='danger';del.textContent='Xoá';del.onclick=()=>{if(state.tasks.some(x=>x.parentTaskId===t.id)){alert('Hãy xoá hoặc chuyển công việc con trước.');return}if(confirm('Xoá công việc này?')){state.tasks=state.tasks.filter(x=>x.id!==t.id);save()}};
+ actions.append(edit,sub,del);div.append(check,details,actions);list.append(div)
+ });
+}
+function pSafe(n){return n||1}
+function openTask(id=null,parentId=''){editingId=id;const t=state.tasks.find(x=>x.id===id);$('taskTitle').value=t?.title||'';$('taskDate').value=t?.date||'';const parent=$('parentTask');parent.innerHTML='<option value="">Không có</option>';state.tasks.filter(x=>x.id!==id&&!state.tasks.some(y=>y.parentTaskId===x.id)).forEach(x=>{const o=document.createElement('option');o.value=x.id;o.textContent=x.title;parent.append(o)});parent.value=t?.parentTaskId||parentId;$('taskForm').hidden=false;$('addTaskBtn').hidden=true;$('taskTitle').focus()}
+function closeTask(){$('taskForm').hidden=true;$('addTaskBtn').hidden=false;editingId=null}
+$('addTaskBtn').onclick=()=>openTask();$('cancelTask').onclick=closeTask;
+$('saveTask').onclick=()=>{const title=$('taskTitle').value.trim(),date=$('taskDate').value,parentTaskId=$('parentTask').value;if(!title){alert('Nhập tên công việc trước nhé.');return}if(editingId){const t=state.tasks.find(x=>x.id===editingId);if(t){t.title=title;t.date=date;t.parentTaskId=parentTaskId===t.id?'':parentTaskId}}else state.tasks.push({id:newId(),title,date,done:false,parentTaskId});closeTask();save()};
+$('editGoalBtn').onclick=()=>{$('goalInput').value=state.goal;$('goalDate').value=state.deadline;$('goalFormCard').hidden=false};
+$('cancelGoal').onclick=()=>$('goalFormCard').hidden=true;
+$('saveGoal').onclick=()=>{const goal=$('goalInput').value.trim();if(!goal){alert('Tên mục tiêu không được để trống.');return}state.goal=goal;state.deadline=$('goalDate').value;$('goalFormCard').hidden=true;save()};
+$('exportBtn').onclick=()=>{const json=JSON.stringify(state,null,2);if(window.GoalFlowBridge?.exportBackup){window.GoalFlowBridge.exportBackup(json);return}const blob=new Blob([json],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="goalflow-backup.json";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)};
+$('importBtn').onclick=()=>$('importFile').click();
+$('importFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const s=JSON.parse(await f.text());if(!s||!Array.isArray(s.tasks)||typeof (s.goal||s.title)!=='string')throw 0;state=normalizeState(s);save();alert('Đã nhập dữ liệu.')}catch(err){alert('File sao lưu không hợp lệ.')}e.target.value=''};
+function apiUrl(){const value=$('workerUrl').value.trim().replace(/\/$/,'');let url;try{url=new URL(value)}catch(e){throw new Error('Nhập địa chỉ Worker hợp lệ.')}if(url.protocol!=='https:'||url.username||url.password||url.search||url.hash||url.pathname!=='/')throw new Error('Nhập địa chỉ gốc HTTPS của Worker.');return value}
+function apiRequest(path,body,token=''){
+ const endpoint=apiUrl();localStorage.setItem(WORKER_KEY,endpoint);
+ if(window.GoalFlowBridge?.notionRequest){return new Promise((resolve,reject)=>{const id=String(++notionRequestId);pendingNotion.set(id,{resolve,reject});try{window.GoalFlowBridge.notionRequest(id,endpoint,path,'POST',JSON.stringify(body||{}))}catch(e){pendingNotion.delete(id);reject(e)}})}
+ return fetch(endpoint+path,{method:'POST',headers:{'content-type':'application/json',...(token?{authorization:`Bearer ${token}`}:{})},body:JSON.stringify(body||{})}).then(async r=>({status:r.status,body:await r.json()}));
+}
+function syncPayload(){return {local:{goals:[{id:state.goalId,title:state.goal,deadline:state.deadline,progress:parseInt($('progressBar').style.width,10)||0}],tasks:state.tasks.map(t=>({id:t.id,title:t.title,deadline:t.date,done:t.done,goalId:state.goalId,parentTaskId:t.parentTaskId||''}))},base:JSON.parse(localStorage.getItem(BASE_KEY)||'{"goals":[],"tasks":[]}')}}
+function applySnapshot(snapshot){const goal=snapshot.goals.find(g=>g.id===state.goalId)||snapshot.goals[0];if(goal){state.goalId=goal.id;state.goal=goal.title;state.deadline=goal.deadline}state.tasks=snapshot.tasks.filter(t=>t.goalId===state.goalId).map(t=>({id:t.id,title:t.title,date:t.deadline||'',done:t.done,parentTaskId:t.parentTaskId||'',goalId:t.goalId}));save();localStorage.setItem(BASE_KEY,JSON.stringify(snapshot))}
+$('syncNotionBtn').onclick=async()=>{const button=$('syncNotionBtn'),password=$('notionPassword').value;$('notionStatus').textContent='Đang xác thực qua HTTPS…';button.disabled=true;try{if(!password)throw new Error('Nhập mật khẩu truy cập Worker.');const login=await apiRequest('/api/login',{password});$('notionPassword').value='';if(login.status!==200)throw new Error(login.body.error==='login_rate_limited'?'Đã vượt giới hạn đăng nhập; thử lại sau.':'Không đăng nhập được. Kiểm tra cấu hình Worker.');notionToken=login.body.token||'';$('notionStatus').textContent='Đang đồng bộ dữ liệu…';const synced=await apiRequest('/api/sync',syncPayload(),notionToken);if(synced.status!==200)throw new Error(synced.body.error==='unauthorized'?'Phiên hết hạn; đăng nhập lại.':`Đồng bộ chưa hoàn tất (${synced.body.error||synced.status}). Dữ liệu cục bộ được giữ nguyên.`);if(synced.body.status==='conflict'){const items=synced.body.conflicts.map(c=>`${c.kind}: ${c.local.title}`).join('\n');throw new Error(`Có ${synced.body.conflicts.length} xung đột. Chưa ghi dữ liệu. Hãy xem và xử lý bản ở GoalFlow/Notion rồi thử lại.\n${items}`)}applySnapshot(synced.body.snapshot);$('notionStatus').textContent='Đồng bộ thành công. Base so sánh đã được cập nhật.'}catch(error){$('notionPassword').value='';$('notionStatus').textContent=error.message;alert(error.message)}finally{button.disabled=false}};
+load();render();
+try { if(window.GoalFlowBridge) window.GoalFlowBridge.sync(JSON.stringify(state)); } catch(e) {}
+</script>
+</body>
+</html>
