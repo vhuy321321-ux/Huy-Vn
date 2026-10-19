@@ -7,6 +7,7 @@ on:
     paths:
       - 'GoalFlow-Android-WebView-MVP.zip'
       - '.github/workflows/build-apk.yml'
+      - 'tests/**'
   pull_request:
     branches:
       - main
@@ -32,6 +33,14 @@ jobs:
             exit 1
           fi
           echo "PROJECT_ROOT=$ROOT" >> "$GITHUB_ENV"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Test web backup flows
+        run: node tests/web-backup.test.mjs "$PROJECT_ROOT/app/src/main/assets/index.html"
 
       - name: Set up Java
         uses: actions/setup-java@v4
